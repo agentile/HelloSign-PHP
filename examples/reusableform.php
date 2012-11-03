@@ -6,9 +6,9 @@ $hs = new \HelloSign\API('user@example.com', 'password', 'apikey');
 
 //$hs::$use_curl = false;
 
-// View account details
+// Retrieve paged list of reusable forms
 try {
-    $response = $hs->api('account');
+    $response = $hs->api('reusable_form/list', array('page' => 1));
     
     if (!$response->containsError()) {
         var_dump($response->getResponse());
@@ -19,12 +19,27 @@ try {
     echo $e->getMessage();
 }
 
-// Update account
+// Retrieve specific reusable form.
 try {
+    $reusable_form_id = 'hashgoeshere';
+    $response = $hs->api('reusable_form/' . $reusable_form_id);
+    
+    if (!$response->containsError()) {
+        var_dump($response->getResponse());
+    } else {
+        echo $response->getError();
+    }
+} catch (\HelloSign\Exception $e) {
+    echo $e->getMessage();
+}
+
+// Add user to reusable form.
+try {
+    $reusable_form_id = 'hashgoeshere';
     $response = $hs->api(
-        'account', 
+        'reusable_form/add_user/' . $reusable_form_id, 
         array(
-            'password' => 'XXX'
+            'email_address' => 'user@example.com'
         ), 
         'POST'
     );
@@ -38,19 +53,13 @@ try {
     echo $e->getMessage();
 }
 
-// Create new account
-// This is dumb, why should I be able to create accounts for people?
-// 1. It results in 'emma' spam for that account, and they probably 
-// have no clue what Hello Sign is to begin with.
-// 2. This should be account/invite that gives back a token/statement that account exists.
-// This would result in an invitation to the email address to create an account with a 
-// password that THEY set.
+// Remove user from reusable form.
 try {
+    $reusable_form_id = 'hashgoeshere';
     $response = $hs->api(
-        'account/create', 
+        'reusable_form/remove_user/' . $reusable_form_id, 
         array(
-            'email_address' => 'email@example.com', 
-            'password' => 'StrongPassword123@!'
+            'email_address' => 'user@example.com'
         ), 
         'POST'
     );
@@ -63,4 +72,3 @@ try {
 } catch (\HelloSign\Exception $e) {
     echo $e->getMessage();
 }
-
